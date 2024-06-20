@@ -9,6 +9,7 @@ const {
   getEmployeeByIdController,
   calculateSalaryController,
   createAllowencePercentage,
+  updateAllowencePercentage,
 } = require("../controller/employeeController");
 
 router.use(authMiddleware);
@@ -24,6 +25,8 @@ router.put("/update/:id", updateEmployeeController);
 router.delete("/delete/:id", deleteEmployeeController);
 
 router.post("/createAllowence", createAllowencePercentage);
+
+router.put("/updateAllowence/:id", updateAllowencePercentage);
 
 router.get("/calculate/:id", calculateSalaryController);
 

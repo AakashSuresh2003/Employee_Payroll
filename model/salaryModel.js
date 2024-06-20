@@ -19,10 +19,6 @@ const salarySchema = mongoose.Schema(
       type: Number,
       required: true,
     },
-    netPay: {
-      type: Number,
-      required: true,
-    },
     perDaySalary:{
         type: Number,
         required: true  

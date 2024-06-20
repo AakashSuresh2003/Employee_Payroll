@@ -1,4 +1,3 @@
-const express = require("express");
 const Emp = require("../model/employeeModel");
 const AllowencePercentage = require("../model/allowencePercentageModel");
 const Salary = require("../model/salaryModel");
@@ -85,7 +84,7 @@ const updateEmployeeController = async (req, res) => {
     });
     if (!updateDetails) return res.status(404).json({ Message: "Not found" });
 
-    res.status(200).json(updateDetails);
+    res.status(200).json({Message:"Employee updated successfully"});
   } catch (err) {
     console.log(err);
     res.status(500).json("Internal server error");
@@ -136,14 +135,34 @@ const createAllowencePercentage = async (req, res) => {
     .json({ message: "Allowence created successfully", newAllowence });
 };
 
+const updateAllowencePercentage = async (req, res) => {
+    try {
+        const user = req.user;
+
+        checkAdminRole(user);
+    
+        const id = req.params.id;
+        if (!id) return res.status(404).json({ message: "Allowence not found" });
+    
+        const {HRA,DA,MA} = req.body;
+        const allowence = await AllowencePercentage.findByIdAndUpdate(id, {
+          HRA,DA,MA
+        });
+        if (!allowence) return res.status(404).json({ message: "Allowence not found" });
+        res.status(200).json({Message:"Allowence updated successfully"});
+    } catch (err) {
+        console.log(err);
+        res.status(500).json("Internal Server Error")
+    }
+}
+
 const calculateSalaryComponents = (basePay, grade) => {
     const HRA = basePay * grade.HRA;
     const DA = basePay * grade.DA;
     const MA = basePay * grade.MA;
-    const netPay = basePay + HRA + DA + MA;
-    const perDaySalary = netPay / 20; 
+    const perDaySalary = (basePay + HRA + DA + MA) / 24; 
   
-    return { HRA, DA, MA, netPay, perDaySalary };
+    return { HRA, DA, MA, perDaySalary };
   };
 
 const calculateSalaryController = async (req, res) => {
@@ -200,5 +219,6 @@ module.exports = {
   updateEmployeeController,
   deleteEmployeeController,
   createAllowencePercentage,
+  updateAllowencePercentage,
   calculateSalaryController,
 };
