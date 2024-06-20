@@ -14,7 +14,6 @@ app.use(cookieParser());
 app.use("/api/v1/auth",authRouter);
 app.use("/api/v1/employee",employeeRouter);
 
-
 ConnectDB();
 
 const PORT = process.env.PORT;
