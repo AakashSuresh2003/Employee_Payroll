@@ -3,8 +3,12 @@ const express = require('express');
 const ConnectDB = require('./db/database');
 const app = express();
 const cors = require('cors');
+const authRouter = require("./routes/auth");
 
+app.use(express.json());
 app.use(cors());
+
+app.use("/api/v1/auth",authRouter);
 
 ConnectDB();
 
