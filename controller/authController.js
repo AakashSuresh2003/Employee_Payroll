@@ -10,7 +10,7 @@ const registerController = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hashSync(password, salt);
     const newUser = await User({ ...req.body, password: hashedPassword });
-    newUser.save();
+    await newUser.save();
     res.status(200).json(newUser);
   } catch (err) {
     console.log(err);
