@@ -3,10 +3,10 @@ const AllowencePercentage = require("../model/allowencePercentageModel");
 const Salary = require("../model/salaryModel");
 
 const checkAdminRole = (user) => {
-    if (user.role !== "admin") {
-      throw new Error("Unauthorized User");
-    }
-  };
+  if (user.role !== "admin") {
+    throw new Error("Unauthorized User");
+  }
+};
 
 const getAllEmployeeController = async (req, res) => {
   try {
@@ -84,7 +84,7 @@ const updateEmployeeController = async (req, res) => {
     });
     if (!updateDetails) return res.status(404).json({ Message: "Not found" });
 
-    res.status(200).json({Message:"Employee updated successfully"});
+    res.status(200).json({ Message: "Employee updated successfully" });
   } catch (err) {
     console.log(err);
     res.status(500).json("Internal server error");
@@ -136,34 +136,37 @@ const createAllowencePercentage = async (req, res) => {
 };
 
 const updateAllowencePercentage = async (req, res) => {
-    try {
-        const user = req.user;
+  try {
+    const user = req.user;
 
-        checkAdminRole(user);
-    
-        const id = req.params.id;
-        if (!id) return res.status(404).json({ message: "Allowence not found" });
-    
-        const {HRA,DA,MA} = req.body;
-        const allowence = await AllowencePercentage.findByIdAndUpdate(id, {
-          HRA,DA,MA
-        });
-        if (!allowence) return res.status(404).json({ message: "Allowence not found" });
-        res.status(200).json({Message:"Allowence updated successfully"});
-    } catch (err) {
-        console.log(err);
-        res.status(500).json("Internal Server Error")
-    }
-}
+    checkAdminRole(user);
+
+    const id = req.params.id;
+    if (!id) return res.status(404).json({ message: "Allowence not found" });
+
+    const { HRA, DA, MA } = req.body;
+    const allowence = await AllowencePercentage.findByIdAndUpdate(id, {
+      HRA,
+      DA,
+      MA,
+    });
+    if (!allowence)
+      return res.status(404).json({ message: "Allowence not found" });
+    res.status(200).json({ Message: "Allowence updated successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json("Internal Server Error");
+  }
+};
 
 const calculateSalaryComponents = (basePay, grade) => {
-    const HRA = basePay * grade.HRA;
-    const DA = basePay * grade.DA;
-    const MA = basePay * grade.MA;
-    const perDaySalary = (basePay + HRA + DA + MA) / 24; 
-  
-    return { HRA, DA, MA, perDaySalary };
-  };
+  const HRA = basePay * grade.HRA;
+  const DA = basePay * grade.DA;
+  const MA = basePay * grade.MA;
+  const perDaySalary = (basePay + HRA + DA + MA) / 24;
+
+  return { HRA, DA, MA, perDaySalary };
+};
 
 const calculateSalaryController = async (req, res) => {
   try {
@@ -189,17 +192,19 @@ const calculateSalaryController = async (req, res) => {
       return res.status(404).json({ message: "Grade not found" });
     }
 
-    const existingSalary = await Salary.findOne({employee_id:employee._id});
+    const existingSalary = await Salary.findOne({ employee_id: employee._id });
     if (existingSalary) {
-        return res.status(400).json({ message: "Salary for this employee already exists" });
-      }
+      return res
+        .status(400)
+        .json({ message: "Salary for this employee already exists" });
+    }
 
     const basePay = employee.base_pay;
     const salaryComponents = calculateSalaryComponents(basePay, grade);
 
     const salary = new Salary({
       employee_id: employee._id,
-    ...salaryComponents
+      ...salaryComponents,
     });
 
     await salary.save();

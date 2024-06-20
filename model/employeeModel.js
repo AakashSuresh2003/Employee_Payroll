@@ -27,10 +27,10 @@ const employeeSchema = mongoose.Schema(
         required: true,
       },
     },
-    base_pay:{
+    base_pay: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   {
     timestramps: true,
