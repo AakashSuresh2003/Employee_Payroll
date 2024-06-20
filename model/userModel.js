@@ -13,6 +13,7 @@ const UserSchema = new mongoose.Schema(
       required: true,
       min: 6,
       max: 255,
+      unique: [true, "Email should be unique"]
     },
     password: {
       type: String,
@@ -24,7 +25,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ["admin", "hr", "accountant"],
       required: true,
-      default: "hr",
+      default: "admin",
     },
   },
   {
