@@ -1,11 +1,18 @@
+const express = require("express");
 const Emp = require("../model/employeeModel");
-const jwt = require("jsonwebtoken");
+const AllowencePercentage = require("../model/allowencePercentageModel");
+const Salary = require("../model/salaryModel");
+
+const checkAdminRole = (user) => {
+    if (user.role !== "admin") {
+      throw new Error("Unauthorized User");
+    }
+  };
 
 const getAllEmployeeController = async (req, res) => {
   try {
     const user = req.user;
-    if (user.role !== "admin")
-      return res.status(401).json({ Message: "UnAuthorised User" });
+    checkAdminRole(user);
 
     const employees = await Emp.find();
     if (!employees)
@@ -20,13 +27,13 @@ const getAllEmployeeController = async (req, res) => {
 const getEmployeeByIdController = async (req, res) => {
   try {
     const user = req.user;
-    if (user.role !== "admin")
-      return res.status(401).json({ Message: "UnAuthorised User" });
+    checkAdminRole(user);
 
     const id = req.params.id;
     if (!id) return res.status(404).json({ Message: "No Employee found" });
     const employee = await Emp.findById(id);
-    if (!employee) return res.status(404).json({ Message: "No Employee found" });
+    if (!employee)
+      return res.status(404).json({ Message: "No Employee found" });
     res.status(200).json(employee);
   } catch (err) {
     console.log(err);
@@ -38,8 +45,7 @@ const createEmployeeController = async (req, res) => {
   try {
     const user = req.user;
 
-    if (user.role !== "admin")
-      return res.status(401).json({ Message: "UnAuthorised User" });
+    checkAdminRole(user);
 
     const { name, email, emp_id, Role, base_pay } = req.body;
     const { rollName, grade } = Role;
@@ -65,8 +71,7 @@ const updateEmployeeController = async (req, res) => {
   try {
     const user = req.user;
 
-    if (user.role !== "admin")
-      return res.status(401).json({ Message: "UnAuthorised User" });
+    checkAdminRole(user);
 
     const { name, email, Role } = req.body;
     const id = req.params.id;
@@ -91,9 +96,7 @@ const deleteEmployeeController = async (req, res) => {
   try {
     const user = req.user;
 
-    if (user.role !== "admin") {
-      return res.status(401).json({ message: "Unauthorized User" });
-    }
+    checkAdminRole(user);
 
     const id = req.params.id;
     if (!id) {
@@ -116,7 +119,79 @@ const deleteEmployeeController = async (req, res) => {
   }
 };
 
-module.exports = deleteEmployeeController;
+const createAllowencePercentage = async (req, res) => {
+  const user = req.user;
+
+  checkAdminRole(user);
+
+  const { grade, HRA, DA, MA } = req.body;
+  const allowence = await AllowencePercentage.findOne({ grade });
+  if (allowence) {
+    return res.status(400).json({ message: "Allowence already exists" });
+  }
+  const newAllowence = await AllowencePercentage({ grade, HRA, DA, MA });
+  await newAllowence.save();
+  res
+    .status(201)
+    .json({ message: "Allowence created successfully", newAllowence });
+};
+
+const calculateSalaryComponents = (basePay, grade) => {
+    const HRA = basePay * grade.HRA;
+    const DA = basePay * grade.DA;
+    const MA = basePay * grade.MA;
+    const netPay = basePay + HRA + DA + MA;
+    const perDaySalary = netPay / 20; 
+  
+    return { HRA, DA, MA, netPay, perDaySalary };
+  };
+
+const calculateSalaryController = async (req, res) => {
+  try {
+    const user = req.user;
+
+    checkAdminRole(user);
+
+    const id = req.params.id;
+    if (!id) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    const employee = await Emp.findById(id);
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    const grade = await AllowencePercentage.findOne({
+      grade: employee.Role.grade,
+    });
+
+    if (!grade) {
+      return res.status(404).json({ message: "Grade not found" });
+    }
+
+    const existingSalary = await Salary.findOne({employee_id:employee._id});
+    if (existingSalary) {
+        return res.status(400).json({ message: "Salary for this employee already exists" });
+      }
+
+    const basePay = employee.base_pay;
+    const salaryComponents = calculateSalaryComponents(basePay, grade);
+
+    const salary = new Salary({
+      employee_id: employee._id,
+    ...salaryComponents
+    });
+
+    await salary.save();
+    res
+      .status(201)
+      .json({ message: "Salary calculated and saved successfully", salary });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
 
 module.exports = {
   getAllEmployeeController,
@@ -124,4 +199,6 @@ module.exports = {
   createEmployeeController,
   updateEmployeeController,
   deleteEmployeeController,
+  createAllowencePercentage,
+  calculateSalaryController,
 };

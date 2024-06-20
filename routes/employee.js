@@ -1,20 +1,30 @@
-const express = require("express"); 
+const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
-const { createEmployeeController, updateEmployeeController, deleteEmployeeController, getAllEmployeeController, getEmployeeByIdController } = require("../controller/employeeController");
+const {
+  createEmployeeController,
+  updateEmployeeController,
+  deleteEmployeeController,
+  getAllEmployeeController,
+  getEmployeeByIdController,
+  calculateSalaryController,
+  createAllowencePercentage,
+} = require("../controller/employeeController");
 
 router.use(authMiddleware);
 
-router.get("/getall",getAllEmployeeController);
+router.get("/getall", getAllEmployeeController);
 
-router.get("/get/:id",getEmployeeByIdController);
+router.get("/get/:id", getEmployeeByIdController);
 
-router.post("/create",createEmployeeController);
+router.post("/create", createEmployeeController);
 
-router.put("/update/:id",updateEmployeeController);
+router.put("/update/:id", updateEmployeeController);
 
-router.delete("/delete/:id",deleteEmployeeController);
+router.delete("/delete/:id", deleteEmployeeController);
 
+router.post("/createAllowence", createAllowencePercentage);
+
+router.get("/calculate/:id", calculateSalaryController);
 
 module.exports = router;
-
