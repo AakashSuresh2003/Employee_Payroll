@@ -7,24 +7,25 @@ const employeeSchema = mongoose.Schema({
     min: 6,
     max: 255,
   },
+  email:{
+    type:String,
+    required:true
+  },
   emp_id: {
     type: String,
     required: true,
     unique: [true, "Employee Id should be unique"],
   },
   Role: {
-    type: {
-      rollName: {
-        type: String,
-        required: true,
-      },
-      grade: {
-        type: String,
-        required: true,
-      },
+    roleName: {
+      type: String,
+      required: true,
     },
-    required: true,
-  },
+    grade: {
+      type: String,
+      required: true,
+    },
+  }
 });
 
 module.exports = mongoose.model("Employee", employeeSchema);
