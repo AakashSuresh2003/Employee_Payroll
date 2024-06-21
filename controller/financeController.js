@@ -1,4 +1,5 @@
 const Emp = require("../model/employeeModel");
+const Salary = require("../model/salaryModel");
 const InHand = require("../model/inHandModel");
 
 const checkAccountantRole = (user) => {
@@ -12,21 +13,26 @@ const getSalariesController = async (req, res) => {
     const user = req.user;
     checkAccountantRole(user);
 
-    const salaries = await InHand.find().populate({
-      path: "employee_id",
-      select: "name Role.roleName",
-    });
+    const salaries = await InHand.find();
 
-    if (!salaries || salaries.length === 0) {
-      return res.status(404).json("No Salaries found");
-    }
+    if (!salaries) return res.status(404).json("No Salaries found");
 
-    res.status(200).json(salaries);
-  } catch (err) {
+    const salariesWithPerDay = await Promise.all(
+      salaries.map(async (salary) => {
+        const salaryDetails = await Salary.findOne({ employee_id: salary.employee_id._id }).select('perDaySalary');
+        return {
+          ...salary.toObject(),
+          perDaySalary: salaryDetails ? salaryDetails.perDaySalary : null,
+        };
+      })
+    );
+    res.status(200).json(salariesWithPerDay);
+  } 
+  catch (err) {
     console.log(err);
     res.status(500).json("Internal Server Error");
   }
-};
+}
 
 const getSalaryByIdController = async (req, res) => {
   try {
@@ -34,34 +40,24 @@ const getSalaryByIdController = async (req, res) => {
     checkAccountantRole(user);
 
     const id = req.params.id;
+    if (!id) return res.status(400).json("Employee ID is required");
 
-    const employee = await Emp.findById(id).select("name Role.roleName");
+    const salary = await InHand.findOne({ employee_id: id });
+    if (!salary) return res.status(404).json("Salary not found for the given Employee ID");
 
-    if (!employee) {
-      return res.status(404).json("Employee not found");
-    }
-
-    const inHandSalary = await InHand.findOne({ employee_id: id }).select(
-      "inHandSalary"
-    );
-
-    if (!inHandSalary) {
-      return res.status(404).json("No Salary found for this employee");
-    }
-
-    const response = {
-      _id: employee._id,
-      name: employee.name,
-      roleName: employee.Role.roleName,
-      inHandSalary: inHandSalary.inHandSalary,
+    const salaryDetails = await Salary.findOne({ employee_id: id }).select('perDaySalary');
+    const result = {
+      ...salary.toObject(),
+      perDaySalary: salaryDetails ? salaryDetails.perDaySalary : null,
     };
 
-    res.status(200).json(response);
+    res.status(200).json(result);
   } catch (err) {
     console.log(err);
     res.status(500).json("Internal Server Error");
   }
-};
+}
+
 
 const getTotalSalaryController = async(req,res)=>{
     try {
