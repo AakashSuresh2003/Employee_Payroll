@@ -140,7 +140,7 @@ const updateAllowencePercentage = async (req, res) => {
       HRA,
       DA,
       MA,
-    });
+    },{new:true});
     if (!allowence)
       return res.status(404).json({ message: "Allowence not found" });
     res.status(200).json({ Message: "Allowence updated successfully" });

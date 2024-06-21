@@ -9,6 +9,10 @@ const employeeRouter = require("./routes/employee");
 const hrRouter = require("./routes/hr");
 const faRouter = require("./routes/finance");
 
+const swaggerDocs = require('./swagger');
+
+swaggerDocs(app, process.env.PORT);
+
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());

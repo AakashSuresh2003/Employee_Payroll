@@ -6,7 +6,7 @@ const registerController = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
     const existingUser = await User.findOne({ email });
-    if (existingUser) throw new Error("This e-mail is already registered");
+    if (existingUser) return res.status(400).json({ Message: "User already exists" });
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hashSync(password, salt);
     const newUser = await User({ ...req.body, password: hashedPassword });
@@ -22,7 +22,7 @@ const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) throw new Error("The user Not found");
+    if (!user) return res.status(404).json({ Message: "User does not exist" });
     const matchedData = await bcrypt.compareSync(password, user.password);
     const { password: _, ...data } = user._doc;
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
