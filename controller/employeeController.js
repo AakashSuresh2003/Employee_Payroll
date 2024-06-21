@@ -52,26 +52,26 @@ const createEmployeeController = async (req, res) => {
 
 const updateEmployeeController = async (req, res) => {
   try {
-    const { name, email, Role ,base_pay} = req.body;
-
+    const { name, email, Role, base_pay } = req.body;
     const id = req.params.id;
 
-    if (!id) return res.status(404).json("No Employee found");
+    if (!id) {
+      return res.status(400).json({ Message: "Employee ID is required" });
+    }
 
-    const updateDetails = await Emp.findByIdAndUpdate(id, {
-      name,
-      email,
-      Role,
-      base_pay
-    });
-    if (!updateDetails) return res.status(404).json({ Message: "Not found" });
+    const updateDetails = await Emp.findByIdAndUpdate(id, {name, email, Role, base_pay }, { new: true });
 
-    res.status(200).json({ Message: "Employee updated successfully" });
+    if (!updateDetails) {
+      return res.status(404).json({ Message: "Employee not found" });
+    }
+
+    res.status(200).json({ Message: "Employee updated successfully", updatedEmployee: updateDetails });
   } catch (err) {
-    console.log(err);
-    res.status(500).json("Internal server error");
+    console.error("Error updating employee:", err);
+    res.status(500).json({ Message: "Internal server error" });
   }
 };
+
 
 const deleteEmployeeController = async (req, res) => {
   try {
