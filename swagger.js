@@ -19,6 +19,10 @@ const options = {
         url: "http://localhost:3000/",
         description: "Local server",
       },
+      {
+        url: "https://employee-payroll-black.vercel.app",
+        description: "Vercel server",
+      }
     ],
   },
   apis: ["./routes/*.js"], 
