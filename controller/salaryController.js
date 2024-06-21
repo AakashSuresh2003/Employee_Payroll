@@ -36,6 +36,10 @@ const createSalaryController = async (req, res) => {
     if (!workingDays)
       return res.status(400).json({ message: "Working days are required" });
 
+    if (workingDays > 24) {
+      return res.status(400).json({ message: "Working days cannot be greater than 24" });
+    }
+    
     const existingEmp = await InHand.findOne({ employee_id: id , month , year});
     if (existingEmp)
       return res.status(403).json({ message: "Salary already exists" });

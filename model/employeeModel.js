@@ -22,7 +22,7 @@ const employeeSchema = mongoose.Schema(
         type: String,
         required: true,
       },
-      grade: {
+      emp_grade: {
         type: String,
         required: true,
       },

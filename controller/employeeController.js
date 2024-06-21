@@ -2,16 +2,10 @@ const Emp = require("../model/employeeModel");
 const AllowencePercentage = require("../model/allowencePercentageModel");
 const Salary = require("../model/salaryModel");
 
-const checkAdminRole = (user) => {
-  if (user.role !== "admin") {
-    throw new Error("Unauthorized User");
-  }
-};
-
 const getAllEmployeeController = async (req, res) => {
   try {
     const user = req.user;
-    if (user.role !== "admin" || user.role !== "hr")
+    if (user.role !== "admin" && user.role !== "hr")
       return res.status(403).json({ Message: "Unauthorized User" });
 
     const employees = await Emp.find();
@@ -27,7 +21,7 @@ const getAllEmployeeController = async (req, res) => {
 const getEmployeeByIdController = async (req, res) => {
   try {
     const user = req.user;
-    if (user.role !== "admin" || user.role !== "hr")
+    if (user.role !== "admin" && user.role !== "hr")
       return res.status(403).json({ Message: "Unauthorized User" });
 
     const id = req.params.id;
@@ -46,10 +40,11 @@ const createEmployeeController = async (req, res) => {
   try {
     const user = req.user;
 
-    checkAdminRole(user);
+    if (user.role !== "admin")
+      return res.status(403).json({ Message: "Unauthorized User" });
 
     const { name, email, emp_id, Role, base_pay } = req.body;
-    const { rollName, grade } = Role;
+    const { rollName, emp_grade } = Role;
 
     const existingEmp = await Emp.findOne({ $or: [{ email }, { emp_id }] });
     if (existingEmp)
@@ -72,9 +67,11 @@ const updateEmployeeController = async (req, res) => {
   try {
     const user = req.user;
 
-    checkAdminRole(user);
+    if (user.role !== "admin")
+      return res.status(403).json({ Message: "Unauthorized User" });
 
     const { name, email, Role } = req.body;
+
     const id = req.params.id;
 
     if (!id) return res.status(404).json("No Employee found");
@@ -97,7 +94,8 @@ const deleteEmployeeController = async (req, res) => {
   try {
     const user = req.user;
 
-    checkAdminRole(user);
+    if (user.role !== "admin")
+      return res.status(403).json({ Message: "Unauthorized User" });
 
     const id = req.params.id;
     if (!id) {
@@ -120,10 +118,32 @@ const deleteEmployeeController = async (req, res) => {
   }
 };
 
+const getAllowencePercentage = async (req, res) => {
+  try {
+    const user = req.user;
+    if (user.role !== "admin" && user.role !== "hr") {
+      return res.status(401).json("Unauthorized User");
+    }
+
+    const grades = await AllowencePercentage.find();
+    if (!grades.length) {
+      return res.status(404).json("Allowance percentage not found");
+    }
+
+    res.status(200).json(grades);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: err.message });
+  }
+};
+
 const createAllowencePercentage = async (req, res) => {
   const user = req.user;
 
-  checkAdminRole(user);
+  if (user.role !== "admin")
+    return res.status(403).json({ Message: "Unauthorized User" });
 
   const { grade, HRA, DA, MA } = req.body;
   const allowence = await AllowencePercentage.findOne({ grade });
@@ -141,7 +161,8 @@ const updateAllowencePercentage = async (req, res) => {
   try {
     const user = req.user;
 
-    checkAdminRole(user);
+    if (user.role !== "admin")
+      return res.status(403).json({ Message: "Unauthorized User" });
 
     const id = req.params.id;
     if (!id) return res.status(404).json({ message: "Allowence not found" });
@@ -165,7 +186,7 @@ const calculateSalaryComponents = (basePay, grade) => {
   const HRA = basePay * grade.HRA;
   const DA = basePay * grade.DA;
   const MA = basePay * grade.MA;
-  const perDaySalary = (basePay + HRA + DA + MA) / 24;
+  const perDaySalary = ((basePay + HRA + DA + MA) / 24).toFixed(2);
 
   return { HRA, DA, MA, perDaySalary };
 };
@@ -174,7 +195,8 @@ const calculateSalaryController = async (req, res) => {
   try {
     const user = req.user;
 
-    checkAdminRole(user);
+    if (user.role !== "admin")
+      return res.status(403).json({ Message: "Unauthorized User" });
 
     const id = req.params.id;
     if (!id) {
@@ -187,7 +209,7 @@ const calculateSalaryController = async (req, res) => {
     }
 
     const grade = await AllowencePercentage.findOne({
-      grade: employee.Role.grade,
+      grade: employee.Role.emp_grade,
     });
 
     if (!grade) {
@@ -228,4 +250,5 @@ module.exports = {
   createAllowencePercentage,
   updateAllowencePercentage,
   calculateSalaryController,
+  getAllowencePercentage,
 };

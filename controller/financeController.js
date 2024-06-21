@@ -10,6 +10,8 @@ const checkAccountantRole = (user) => {
 
 const generatePayController = async (req, res) => {
   try {
+    const user = req.user;
+    checkAccountantRole(user);
     const salaries = await InHand.find();
 
     if (!salaries) return res.status(404).json("No Salaries found");
@@ -26,20 +28,17 @@ const generatePayController = async (req, res) => {
       })
     );
     console.log(salariesWithPerDay);
-    const newData = salariesWithPerDay.map((data) => (
-{
-      employee_id : data.employee_id,
-      workingDays : data.workingDays,
-      perDaySalary:  data.perDaySalary,
-      monthlySalary : data.inHandSalary,
-      month : data.month,
-      year: data.year
-}
-    ))
+    const newData = salariesWithPerDay.map((data) => ({
+      employee_id: data.employee_id,
+      workingDays: data.workingDays,
+      perDaySalary: data.perDaySalary,
+      monthlySalary: data.inHandSalary,
+      month: data.month,
+      year: data.year,
+    }));
     console.log(newData);
-    await PaySlip.insertMany(newData)
-    res.status(200).json("Salary calculated succesfylly")
-
+    await PaySlip.insertMany(newData);
+    res.status(200).json("Salary calculated succesfylly");
   } catch (err) {
     console.log(err);
     res.status(500).json("Internal server error");
@@ -51,7 +50,7 @@ const getSalariesController = async (req, res) => {
     const user = req.user;
     checkAccountantRole(user);
     const pay = await PaySlip.find();
-    if(!pay) return res.status(404).json({Message:"Salaries not found"});
+    if (!pay) return res.status(404).json({ Message: "Salaries not found" });
     res.status(200).json(pay);
   } catch (err) {
     console.log(err);
