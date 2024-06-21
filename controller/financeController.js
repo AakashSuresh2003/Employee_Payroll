@@ -2,16 +2,8 @@ const Salary = require("../model/salaryModel");
 const InHand = require("../model/inHandModel");
 const PaySlip = require("../model/paySlip");
 
-const checkAccountantRole = (user) => {
-  if (user.role !== "accountant") {
-    throw new Error("Unauthorized User");
-  }
-};
-
 const generatePayController = async (req, res) => {
   try {
-    const user = req.user;
-    checkAccountantRole(user);
     const salaries = await InHand.find();
 
     if (!salaries) return res.status(404).json("No Salaries found");
@@ -47,8 +39,6 @@ const generatePayController = async (req, res) => {
 
 const getSalariesController = async (req, res) => {
   try {
-    const user = req.user;
-    checkAccountantRole(user);
     const pay = await PaySlip.find();
     if (!pay) return res.status(404).json({ Message: "Salaries not found" });
     res.status(200).json(pay);
@@ -60,9 +50,6 @@ const getSalariesController = async (req, res) => {
 
 const getSalaryByIdController = async (req, res) => {
   try {
-    const user = req.user;
-    checkAccountantRole(user);
-
     const id = req.params.id;
     if (!id) return res.status(400).json("Employee ID is required");
 
@@ -81,9 +68,6 @@ const getSalaryByIdController = async (req, res) => {
 
 const getTotalSalaryController = async (req, res) => {
   try {
-    const user = req.user;
-    checkAccountantRole(user);
-
     const total = await PaySlip.aggregate([
       {
         $group: {
