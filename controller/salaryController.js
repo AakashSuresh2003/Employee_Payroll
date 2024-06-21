@@ -31,12 +31,12 @@ const createSalaryController = async (req, res) => {
         .json({ message: "Salary record not found for the employee" });
 
     const perDayPay = salary.perDaySalary;
-    const { workingDays } = req.body;
+    const { workingDays, month , year } = req.body;
 
     if (!workingDays)
       return res.status(400).json({ message: "Working days are required" });
 
-    const existingEmp = await InHand.findOne({ employee_id: id });
+    const existingEmp = await InHand.findOne({ employee_id: id , month , year});
     if (existingEmp)
       return res.status(403).json({ message: "Salary already exists" });
 
@@ -46,9 +46,11 @@ const createSalaryController = async (req, res) => {
       employee_id: id,
       workingDays,
       inHandSalary,
+      month,
+      year
     });
-
     await inHand.save();
+    
     res.status(201).json({ message: "Salary created successfully", inHand });
   } catch (err) {
     console.log(err);

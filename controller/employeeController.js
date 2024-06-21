@@ -11,7 +11,8 @@ const checkAdminRole = (user) => {
 const getAllEmployeeController = async (req, res) => {
   try {
     const user = req.user;
-    checkAdminRole(user);
+    if (user.role !== "admin" || user.role !== "hr")
+      return res.status(403).json({ Message: "Unauthorized User" });
 
     const employees = await Emp.find();
     if (!employees)
@@ -26,7 +27,8 @@ const getAllEmployeeController = async (req, res) => {
 const getEmployeeByIdController = async (req, res) => {
   try {
     const user = req.user;
-    checkAdminRole(user);
+    if (user.role !== "admin" || user.role !== "hr")
+      return res.status(403).json({ Message: "Unauthorized User" });
 
     const id = req.params.id;
     if (!id) return res.status(404).json({ Message: "No Employee found" });
