@@ -18,7 +18,6 @@ app.use(cors());
 app.use(cookieParser());
 
 app.get("/",(req,res)=>{
-    // res.redirect("https://employee-payroll-black.vercel.app/api-docs/#/");
     res.status(200).json("Welcome to Employee Payroll API");
 })
 
