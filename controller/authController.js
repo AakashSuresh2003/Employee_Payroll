@@ -22,7 +22,7 @@ const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) throw new Error("The user Not found");
+    if (!user) res.status(404).json("The user Not found");
     const matchedData = await bcrypt.compareSync(password, user.password);
     const { password: _, ...data } = user._doc;
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
