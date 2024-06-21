@@ -2,19 +2,19 @@ const Salary = require("../model/salaryModel");
 const InHand = require("../model/inHandModel");
 const PaySlip = require("../model/paySlip");
 
-const checkAccountantRole = (user) => {
-  if (user.role !== "accountant") {
-    throw new Error("Unauthorized User");
-  }
-};
-
 const generatePayController = async (req, res) => {
   try {
-    const user = req.user;
-    checkAccountantRole(user);
     const salaries = await InHand.find();
 
-    if (!salaries) return res.status(404).json("No Salaries found");
+    if (!salaries || salaries.length === 0) {
+      return res.status(404).json("No Salaries found");
+    }
+
+    const existingPaySlips = await PaySlip.find({}, { employee_id: 1, month: 1 });
+    const existingEmployeeMonths = existingPaySlips.map((paySlip) => ({
+      employee_id: paySlip.employee_id.toString(),
+      month: paySlip.month,
+    }));
 
     const salariesWithPerDay = await Promise.all(
       salaries.map(async (salary) => {
@@ -27,7 +27,7 @@ const generatePayController = async (req, res) => {
         };
       })
     );
-    console.log(salariesWithPerDay);
+
     const newData = salariesWithPerDay.map((data) => ({
       employee_id: data.employee_id,
       workingDays: data.workingDays,
@@ -36,19 +36,30 @@ const generatePayController = async (req, res) => {
       month: data.month,
       year: data.year,
     }));
-    console.log(newData);
-    await PaySlip.insertMany(newData);
-    res.status(200).json("Salary calculated succesfylly");
+
+    const newDataFiltered = newData.filter((data) => {
+      const exists = existingEmployeeMonths.some(
+        (existing) =>
+          existing.employee_id === data.employee_id.toString() && existing.month === data.month
+      );
+      return !exists;
+    });
+
+    if (newDataFiltered.length > 0) {
+      await PaySlip.insertMany(newDataFiltered);
+      return res.status(200).json("Salaries calculated and saved successfully");
+    } else {
+      return res.status(200).json("No new salaries to calculate or save");
+    }
   } catch (err) {
     console.log(err);
     res.status(500).json("Internal server error");
   }
 };
 
+
 const getSalariesController = async (req, res) => {
   try {
-    const user = req.user;
-    checkAccountantRole(user);
     const pay = await PaySlip.find();
     if (!pay) return res.status(404).json({ Message: "Salaries not found" });
     res.status(200).json(pay);
@@ -60,9 +71,6 @@ const getSalariesController = async (req, res) => {
 
 const getSalaryByIdController = async (req, res) => {
   try {
-    const user = req.user;
-    checkAccountantRole(user);
-
     const id = req.params.id;
     if (!id) return res.status(400).json("Employee ID is required");
 
@@ -81,9 +89,6 @@ const getSalaryByIdController = async (req, res) => {
 
 const getTotalSalaryController = async (req, res) => {
   try {
-    const user = req.user;
-    checkAccountantRole(user);
-
     const total = await PaySlip.aggregate([
       {
         $group: {

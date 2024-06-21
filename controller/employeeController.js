@@ -4,10 +4,6 @@ const Salary = require("../model/salaryModel");
 
 const getAllEmployeeController = async (req, res) => {
   try {
-    const user = req.user;
-    if (user.role !== "admin" && user.role !== "hr")
-      return res.status(403).json({ Message: "Unauthorized User" });
-
     const employees = await Emp.find();
     if (!employees)
       return res.status(404).json({ Message: "No Employees found" });
@@ -20,10 +16,6 @@ const getAllEmployeeController = async (req, res) => {
 
 const getEmployeeByIdController = async (req, res) => {
   try {
-    const user = req.user;
-    if (user.role !== "admin" && user.role !== "hr")
-      return res.status(403).json({ Message: "Unauthorized User" });
-
     const id = req.params.id;
     if (!id) return res.status(404).json({ Message: "No Employee found" });
     const employee = await Emp.findById(id);
@@ -38,11 +30,6 @@ const getEmployeeByIdController = async (req, res) => {
 
 const createEmployeeController = async (req, res) => {
   try {
-    const user = req.user;
-
-    if (user.role !== "admin")
-      return res.status(403).json({ Message: "Unauthorized User" });
-
     const { name, email, emp_id, Role, base_pay } = req.body;
     const { rollName, emp_grade } = Role;
 
@@ -65,11 +52,6 @@ const createEmployeeController = async (req, res) => {
 
 const updateEmployeeController = async (req, res) => {
   try {
-    const user = req.user;
-
-    if (user.role !== "admin")
-      return res.status(403).json({ Message: "Unauthorized User" });
-
     const { name, email, Role } = req.body;
 
     const id = req.params.id;
@@ -92,11 +74,6 @@ const updateEmployeeController = async (req, res) => {
 
 const deleteEmployeeController = async (req, res) => {
   try {
-    const user = req.user;
-
-    if (user.role !== "admin")
-      return res.status(403).json({ Message: "Unauthorized User" });
-
     const id = req.params.id;
     if (!id) {
       return res.status(404).json({ message: "Employee not found" });
@@ -120,11 +97,6 @@ const deleteEmployeeController = async (req, res) => {
 
 const getAllowencePercentage = async (req, res) => {
   try {
-    const user = req.user;
-    if (user.role !== "admin" && user.role !== "hr") {
-      return res.status(401).json("Unauthorized User");
-    }
-
     const grades = await AllowencePercentage.find();
     if (!grades.length) {
       return res.status(404).json("Allowance percentage not found");
@@ -140,30 +112,25 @@ const getAllowencePercentage = async (req, res) => {
 };
 
 const createAllowencePercentage = async (req, res) => {
-  const user = req.user;
-
-  if (user.role !== "admin")
-    return res.status(403).json({ Message: "Unauthorized User" });
-
-  const { grade, HRA, DA, MA } = req.body;
-  const allowence = await AllowencePercentage.findOne({ grade });
-  if (allowence) {
-    return res.status(400).json({ message: "Allowence already exists" });
+  try {
+    const { grade, HRA, DA, MA } = req.body;
+    const allowence = await AllowencePercentage.findOne({ grade });
+    if (allowence) {
+      return res.status(400).json({ message: "Allowence already exists" });
+    }
+    const newAllowence = await AllowencePercentage({ grade, HRA, DA, MA });
+    await newAllowence.save();
+    res
+      .status(201)
+      .json({ message: "Allowence created successfully", newAllowence });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json("Internal Server Error");
   }
-  const newAllowence = await AllowencePercentage({ grade, HRA, DA, MA });
-  await newAllowence.save();
-  res
-    .status(201)
-    .json({ message: "Allowence created successfully", newAllowence });
 };
 
 const updateAllowencePercentage = async (req, res) => {
   try {
-    const user = req.user;
-
-    if (user.role !== "admin")
-      return res.status(403).json({ Message: "Unauthorized User" });
-
     const id = req.params.id;
     if (!id) return res.status(404).json({ message: "Allowence not found" });
 
@@ -193,11 +160,6 @@ const calculateSalaryComponents = (basePay, grade) => {
 
 const calculateSalaryController = async (req, res) => {
   try {
-    const user = req.user;
-
-    if (user.role !== "admin")
-      return res.status(403).json({ Message: "Unauthorized User" });
-
     const id = req.params.id;
     if (!id) {
       return res.status(404).json({ message: "Employee not found" });
