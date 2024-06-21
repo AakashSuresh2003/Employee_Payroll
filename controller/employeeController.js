@@ -52,7 +52,7 @@ const createEmployeeController = async (req, res) => {
 
 const updateEmployeeController = async (req, res) => {
   try {
-    const { name, email, Role } = req.body;
+    const { name, email, Role ,base_pay} = req.body;
 
     const id = req.params.id;
 
@@ -62,6 +62,7 @@ const updateEmployeeController = async (req, res) => {
       name,
       email,
       Role,
+      base_pay
     });
     if (!updateDetails) return res.status(404).json({ Message: "Not found" });
 

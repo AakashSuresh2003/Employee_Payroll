@@ -100,7 +100,7 @@ const getTotalSalaryController = async (req, res) => {
 
     if (!total) return res.status(404).json("No Salaries found");
 
-    const totalSalary = total[0].totalNetPay;
+    const totalSalary = parseFloat((total[0].totalNetPay).toFixed(2));
     res.status(200).json({ totalSalary });
   } catch (err) {
     console.log(err);

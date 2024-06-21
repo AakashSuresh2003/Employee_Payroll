@@ -9,7 +9,7 @@ const checkHrRole = (user) => {
 };
 
 const calculateInHandSalary = (perDayPay, workingDays) => {
-  return perDayPay * workingDays;
+  return (perDayPay * workingDays).toFixed(2);
 };
 
 const createSalaryController = async (req, res) => {
