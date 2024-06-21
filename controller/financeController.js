@@ -11,6 +11,7 @@ const generatePayController = async (req, res) => {
     }
 
     const existingPaySlips = await PaySlip.find({}, { employee_id: 1, month: 1 });
+    
     const existingEmployeeMonths = existingPaySlips.map((paySlip) => ({
       employee_id: paySlip.employee_id.toString(),
       month: paySlip.month,
@@ -19,44 +20,52 @@ const generatePayController = async (req, res) => {
     const salariesWithPerDay = await Promise.all(
       salaries.map(async (salary) => {
         const salaryDetails = await Salary.findOne({
-          employee_id: salary.employee_id._id,
+          employee_id: salary.employee_id,
         }).select("perDaySalary");
+        console.log("Salary Details: "+salaryDetails);
         return {
           ...salary.toObject(),
-          perDaySalary: salaryDetails ? salaryDetails.perDaySalary : null,
+          perDaySalary: salaryDetails.perDaySalary ,
         };
       })
     );
 
-    const newData = salariesWithPerDay.map((data) => ({
-      employee_id: data.employee_id,
-      workingDays: data.workingDays,
-      perDaySalary: data.perDaySalary,
-      monthlySalary: data.inHandSalary,
-      month: data.month,
-      year: data.year,
-    }));
+    const newData = await Promise.all(
+      salariesWithPerDay.map(async (data) => {
+        console.log(data.employee_id);
+        const isAvailable = await PaySlip.findOne({
+          employee_id: data.employee_id,
+          month: data.month,
+        });
 
-    const newDataFiltered = newData.filter((data) => {
-      const exists = existingEmployeeMonths.some(
-        (existing) =>
-          existing.employee_id === data.employee_id.toString() && existing.month === data.month
-      );
-      return !exists;
-    });
+        if (!isAvailable) {
+          console.log(data.perDaySalary);
+          return {
+            employee_id: data.employee_id,
+            workingDays: data.workingDays,
+            perDaySalary: data.perDaySalary,
+            monthlySalary: data.inHandSalary,
+            month: data.month,
+            year: data.year,
+          };
+        }
+      })
+    );
+
+    const newDataFiltered = newData.filter((data) => data !== undefined);
+    console.log(newDataFiltered);
 
     if (newDataFiltered.length > 0) {
-      await PaySlip.insertMany(newDataFiltered);
+      await PaySlip.create(newDataFiltered);
       return res.status(200).json("Salaries calculated and saved successfully");
     } else {
-      return res.status(200).json("No new salaries to calculate or save");
+      return res.status(200).json("No new salary to calculate or save");
     }
   } catch (err) {
-    console.log(err);
+    console.error("Error in generatePayController:", err);
     res.status(500).json("Internal server error");
   }
 };
-
 
 const getSalariesController = async (req, res) => {
   try {
