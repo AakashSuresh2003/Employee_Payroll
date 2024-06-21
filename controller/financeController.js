@@ -6,7 +6,15 @@ const generatePayController = async (req, res) => {
   try {
     const salaries = await InHand.find();
 
-    if (!salaries) return res.status(404).json("No Salaries found");
+    if (!salaries || salaries.length === 0) {
+      return res.status(404).json("No Salaries found");
+    }
+
+    const existingPaySlips = await PaySlip.find({}, { employee_id: 1, month: 1 });
+    const existingEmployeeMonths = existingPaySlips.map((paySlip) => ({
+      employee_id: paySlip.employee_id.toString(),
+      month: paySlip.month,
+    }));
 
     const salariesWithPerDay = await Promise.all(
       salaries.map(async (salary) => {
@@ -19,7 +27,7 @@ const generatePayController = async (req, res) => {
         };
       })
     );
-    console.log(salariesWithPerDay);
+
     const newData = salariesWithPerDay.map((data) => ({
       employee_id: data.employee_id,
       workingDays: data.workingDays,
@@ -28,14 +36,27 @@ const generatePayController = async (req, res) => {
       month: data.month,
       year: data.year,
     }));
-    console.log(newData);
-    await PaySlip.insertMany(newData);
-    res.status(200).json("Salary calculated succesfylly");
+
+    const newDataFiltered = newData.filter((data) => {
+      const exists = existingEmployeeMonths.some(
+        (existing) =>
+          existing.employee_id === data.employee_id.toString() && existing.month === data.month
+      );
+      return !exists;
+    });
+
+    if (newDataFiltered.length > 0) {
+      await PaySlip.insertMany(newDataFiltered);
+      return res.status(200).json("Salaries calculated and saved successfully");
+    } else {
+      return res.status(200).json("No new salaries to calculate or save");
+    }
   } catch (err) {
     console.log(err);
     res.status(500).json("Internal server error");
   }
 };
+
 
 const getSalariesController = async (req, res) => {
   try {

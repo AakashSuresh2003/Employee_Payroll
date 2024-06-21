@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
+const {checkAdminRole,checkAdminAndHrRole} = require("../middleware/accessMiddleware"); 
 const {
   createEmployeeController,
   updateEmployeeController,
@@ -15,22 +16,22 @@ const {
 
 router.use(authMiddleware);
 
-router.get("/getall", getAllEmployeeController);
+router.get("/getall",checkAdminAndHrRole, getAllEmployeeController);
 
-router.get("/get/:id", getEmployeeByIdController);
+router.get("/get/:id", checkAdminAndHrRole,getEmployeeByIdController);
 
-router.post("/create", createEmployeeController);
+router.post("/create", checkAdminRole,createEmployeeController);
 
-router.put("/update/:id", updateEmployeeController);
+router.put("/update/:id",checkAdminRole ,updateEmployeeController);
 
-router.delete("/delete/:id", deleteEmployeeController);
+router.delete("/delete/:id", checkAdminRole,deleteEmployeeController);
 
-router.get("/getAllowence",getAllowencePercentage)
+router.get("/getAllowence",checkAdminAndHrRole ,getAllowencePercentage)
 
-router.post("/createAllowence", createAllowencePercentage);
+router.post("/createAllowence",checkAdminRole ,createAllowencePercentage);
 
-router.put("/updateAllowence/:id", updateAllowencePercentage);
+router.put("/updateAllowence/:id", checkAdminRole,updateAllowencePercentage);
 
-router.get("/calculate/:id", calculateSalaryController);
+router.get("/calculate/:id", checkAdminRole,calculateSalaryController);
 
 module.exports = router;
