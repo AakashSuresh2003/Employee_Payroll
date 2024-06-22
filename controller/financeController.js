@@ -6,6 +6,10 @@ const generatePayController = async (req, res) => {
   try {
     const salaries = await InHand.find();
 
+    const perDaySal = await Salary.find();
+
+    if(salaries.length !== perDaySal.length) return res.status(400).json("Please add per day salary for all employees");
+
     if (!salaries || salaries.length === 0) {
       return res.status(404).json("No Salaries found");
     }
