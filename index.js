@@ -17,8 +17,8 @@ app.use(express.static("public"));
 app.use(express.json());
 
 const corsOptions = {
-  origin: "https://employee-payroll-frontend-qnsr.vercel.app", 
-  credentials: true, 
+  origin: "http://localhost:3000", // Replace with your React app's domain
+  credentials: true, // Allow cookies to be sent
 };
 
 
