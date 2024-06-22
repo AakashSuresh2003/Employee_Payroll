@@ -11,10 +11,8 @@ const faRouter = require("./routes/finance");
 
 const swaggerDocs = require('./swagger');
 
-swaggerDocs(app, process.env.PORT);
-
-
 app.use(express.static('public'));
+
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
@@ -23,12 +21,15 @@ app.get("/",(req,res)=>{
     res.status(200).json("Welcome to Employee Payroll API");
 })
 
+
 app.use("/api/v1/auth",authRouter);
 app.use("/api/v1/employee",employeeRouter);
 app.use("/api/v1/hr",hrRouter);
 app.use("/api/v1/fa",faRouter);
 
 ConnectDB();
+
+swaggerDocs(app, process.env.PORT);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
