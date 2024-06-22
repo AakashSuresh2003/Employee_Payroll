@@ -6,17 +6,21 @@ const checkAdminRole = (req, res, next) => {
       .status(401)
       .json("Unauthorized User (Only Admin can access this route)");
   }
-
   next(); 
 };
 
 const checkAdminAndHrRole = (req, res, next) => {
-  const user = req.user;
-  if (user.role !== "admin" && user.role !== "hr")
-    return res
-      .status(401)
-      .json("Unauthorized User (Only Admin and HR can access this route)");
-  next();
+  console.log(req.user);
+    if (req.user && req.user.role) {
+        const { role } = req.user;
+        if (role === 'admin' || role === 'hr') {
+            return next();
+        } else {
+            return res.status(403).json({ message: 'Access forbidden: Requires admin or HR role' });
+        }
+    } else {
+        return res.status(401).json({ message: 'Unauthorized: User role not found' });
+    }
 };
 
 const checkAccountantRole = (req, res, next) => {

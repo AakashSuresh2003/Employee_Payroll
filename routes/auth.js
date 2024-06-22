@@ -4,6 +4,11 @@ const {
   loginController,
   logoutController,
 } = require("../controller/authController");
+
+const authMiddleware = require("../middleware/authMiddleware")
+
+const {checkAdminAndHrRole} = require("../middleware/accessMiddleware")
+
 const router = express.Router();
 
 /**
@@ -92,7 +97,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post("/register", registerController);
+router.post("/register",authMiddleware ,checkAdminAndHrRole , registerController);
 
 /**
  * @swagger
