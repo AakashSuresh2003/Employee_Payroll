@@ -16,13 +16,14 @@ app.use(express.static("public"));
 
 app.use(express.json());
 
-const corsOptions = {
-  origin: "http://localhost:3000", // Replace with your React app's domain
-  credentials: true, // Allow cookies to be sent
-};
 
+app.use(cors({
+  origin: ["http://localhost:3000/" ,"https://employee-payroll-frontend-qnsr.vercel.app"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
-app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
