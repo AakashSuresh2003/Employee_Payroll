@@ -13,6 +13,8 @@ const swaggerDocs = require('./swagger');
 
 swaggerDocs(app, process.env.PORT);
 
+
+app.use(express.static('public'));
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
