@@ -9,20 +9,20 @@ const employeeRouter = require("./routes/employee");
 const hrRouter = require("./routes/hr");
 const faRouter = require("./routes/finance");
 
-const swaggerUI = require("swagger-ui-express");
+const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
-
-const CSS_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
 
 app.use(express.static("public"));
 
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const options = {
-  definition: {
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: "3.0.0",
     info: {
       title: "Payroll API",
       description: "API endpoints for payroll services documented on Swagger",
@@ -42,13 +42,9 @@ const options = {
   },
   apis: ["./routes/*.js"],
 };
-const specs = swaggerJsdoc(options);
 
-app.use(
-  "/api-docs",
-  swaggerUI.serve,
-  swaggerUI.setup(specs, { customCssUrl: CSS_URL })
-);
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get("/", (req, res) => {
   res.status(200).json("Welcome to Employee Payroll API");
