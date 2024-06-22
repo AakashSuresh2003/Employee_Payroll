@@ -4,20 +4,46 @@ const ConnectDB = require('./db/database');
 const app = express();
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
 const authRouter = require("./routes/auth");
 const employeeRouter = require("./routes/employee");
 const hrRouter = require("./routes/hr");
 const faRouter = require("./routes/finance");
 
-const swaggerOptions = require("./swagger");
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
 
 app.use(express.static('public'));
 
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
+
+
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+          title: 'Payroll API',
+          description: 'API endpoints for payroll services documented on Swagger',
+          contact: {
+            name: 'Aakash S',
+            email: 'aakashsuresh455@gmail.com',
+            url: 'https://github.com/aakashsuresh2003/Employee_Payroll',
+          },
+          version: '1.0.0',
+        },
+      servers: [
+        {
+            url: 'https://employee-payroll-jet.vercel.app',
+          description: 'Local server'
+        }
+      ]
+    },
+    apis: ['./routes/*.js'],
+  };
+  
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get("/",(req,res)=>{
     res.status(200).json("Welcome to Employee Payroll API");
@@ -31,9 +57,6 @@ app.use("/api/v1/fa",faRouter);
 
 
 ConnectDB();
-
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
