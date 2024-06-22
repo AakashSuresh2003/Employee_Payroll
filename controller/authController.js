@@ -6,7 +6,8 @@ const registerController = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ Message: "User already exists" });
+    if (existingUser)
+      return res.status(400).json({ Message: "User already exists" });
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hashSync(password, salt);
     const newUser = await User({ ...req.body, password: hashedPassword });
@@ -28,7 +29,14 @@ const loginController = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES,
     });
-    res.cookie("token", token).status(200).json(data);
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .status(200)
+      .json(data);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
