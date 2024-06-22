@@ -8,6 +8,7 @@ const authRouter = require("./routes/auth");
 const employeeRouter = require("./routes/employee");
 const hrRouter = require("./routes/hr");
 const faRouter = require("./routes/finance");
+const bodyParser = require("body-parser");
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
@@ -67,5 +68,5 @@ ConnectDB();
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
-  console.log("Server is running on port 3000");
+  console.log("Server is running on port 3500");
 });
