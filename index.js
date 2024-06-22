@@ -9,7 +9,7 @@ const employeeRouter = require("./routes/employee");
 const hrRouter = require("./routes/hr");
 const faRouter = require("./routes/finance");
 
-const swaggerDocs = require('./swagger');
+const swaggerOptions = require("./swagger");
 
 app.use(express.static('public'));
 
@@ -27,9 +27,11 @@ app.use("/api/v1/employee",employeeRouter);
 app.use("/api/v1/hr",hrRouter);
 app.use("/api/v1/fa",faRouter);
 
+
 ConnectDB();
 
-swaggerDocs(app, process.env.PORT);
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
