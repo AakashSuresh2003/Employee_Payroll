@@ -15,7 +15,14 @@ const swaggerJsdoc = require("swagger-jsdoc");
 app.use(express.static("public"));
 
 app.use(express.json());
-app.use(cors());
+
+const corsOptions = {
+  origin: "https://employee-payroll-frontend-qnsr.vercel.app", 
+  credentials: true, 
+};
+
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
