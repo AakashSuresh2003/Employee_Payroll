@@ -18,16 +18,11 @@ app.use(express.static("public"));
 app.use(express.json());
 
 
-app.use(cors({
-  origin: ["http://localhost:3000/" ,"https://employee-payroll-frontend-qnsr.vercel.app"],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use(cors({origin:true,credentials:true}));
 
 const swaggerOptions = {
   swaggerDefinition: {
