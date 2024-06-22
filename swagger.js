@@ -28,6 +28,13 @@ const swaggerSpec = swaggerJsdoc(options);
 
 function swaggerDocs(app, port) {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+  app.use((req, res, next) => {
+    if (req.url.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    }
+    next();
+  });
   
   app.get('/docs.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
