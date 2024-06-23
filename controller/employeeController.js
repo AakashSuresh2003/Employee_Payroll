@@ -1,6 +1,8 @@
 const Emp = require("../model/employeeModel");
 const AllowencePercentage = require("../model/allowencePercentageModel");
 const Salary = require("../model/salaryModel");
+const InHand = require("../model/inHandModel");
+const PaySlip = require("../model/paySlip");
 
 const getAllEmployeeController = async (req, res) => {
   try {
@@ -59,19 +61,27 @@ const updateEmployeeController = async (req, res) => {
       return res.status(400).json({ Message: "Employee ID is required" });
     }
 
-    const updateDetails = await Emp.findByIdAndUpdate(id, {name, email, Role, base_pay }, { new: true });
+    const updateDetails = await Emp.findByIdAndUpdate(
+      id,
+      { name, email, Role, base_pay },
+      { new: true }
+    );
 
     if (!updateDetails) {
       return res.status(404).json({ Message: "Employee not found" });
     }
 
-    res.status(200).json({ Message: "Employee updated successfully", updatedEmployee: updateDetails });
+    res
+      .status(200)
+      .json({
+        Message: "Employee updated successfully",
+        updatedEmployee: updateDetails,
+      });
   } catch (err) {
     console.error("Error updating employee:", err);
     res.status(500).json({ Message: "Internal server error" });
   }
 };
-
 
 const deleteEmployeeController = async (req, res) => {
   try {
@@ -81,11 +91,22 @@ const deleteEmployeeController = async (req, res) => {
     }
 
     const deleteEmployee = await Emp.findByIdAndDelete(id);
+    const deleteSalary = await Salary.findOneAndDelete({ employee_id: id });
+    const deleteInHand = await InHand.findOneAndDelete({ employee_id: id });
+    const deletePaySlip = await PaySlip.findOneAndDelete({ employee_id: id });
+
     if (!deleteEmployee) {
       return res
         .status(404)
         .json({ message: "Employee not found or unauthorized to delete" });
     }
+    if (!deleteSalary) {
+      return res.status(404).json({ message: "Salary not found" });
+    }
+    if (!deleteInHand) {
+      return res.status(404).json({ message: "InHand not found" });
+    }
+    if(!deletePaySlip) return res.status(404).json({message:"Payslip not found"});
 
     res
       .status(200)
@@ -136,11 +157,15 @@ const updateAllowencePercentage = async (req, res) => {
     if (!id) return res.status(404).json({ message: "Allowence not found" });
 
     const { HRA, DA, MA } = req.body;
-    const allowence = await AllowencePercentage.findByIdAndUpdate(id, {
-      HRA,
-      DA,
-      MA,
-    },{new:true});
+    const allowence = await AllowencePercentage.findByIdAndUpdate(
+      id,
+      {
+        HRA,
+        DA,
+        MA,
+      },
+      { new: true }
+    );
     if (!allowence)
       return res.status(404).json({ message: "Allowence not found" });
     res.status(200).json({ Message: "Allowence updated successfully" });
