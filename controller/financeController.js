@@ -8,10 +8,10 @@ const generatePayController = async (req, res) => {
 
     const perDaySal = await Salary.find();
 
-    if(salaries.length !== perDaySal.length) return res.status(400).json("Please add per day salary for all employees");
+    if(salaries.length !== perDaySal.length) return res.status(400).json({message:"Please add per day salary for all employees"});
 
     if (!salaries || salaries.length === 0) {
-      return res.status(404).json("No Salaries found");
+      return res.status(404).json({message:"No Salaries found"});
     }
 
     const existingPaySlips = await PaySlip.find({}, { employee_id: 1, month: 1 });
@@ -61,13 +61,13 @@ const generatePayController = async (req, res) => {
 
     if (newDataFiltered.length > 0) {
       await PaySlip.create(newDataFiltered);
-      return res.status(200).json("Salaries calculated and saved successfully");
+      return res.status(200).json({message:"Salaries calculated and saved successfully"});
     } else {
       return res.status(200).json("No new salary to calculate or save");
     }
   } catch (err) {
     console.error("Error in generatePayController:", err);
-    res.status(500).json("Internal server error");
+    res.status(500).json({error : "Internal server error"});
   }
 };
 
@@ -78,25 +78,25 @@ const getSalariesController = async (req, res) => {
     res.status(200).json(pay);
   } catch (err) {
     console.log(err);
-    res.status(500).json("Internal Server Error");
+    res.status(500).json({error:"Internal Server Error"});
   }
 };
 
 const getSalaryByIdController = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!id) return res.status(400).json("Employee ID is required");
+    if (!id) return res.status(400).json({message:"Employee ID is required"});
 
     const salary = await InHand.findOne({ employee_id: id });
     if (!salary)
-      return res.status(404).json("Salary not found for the given Employee ID");
+      return res.status(404).json({message:"Salary not found for the given Employee ID"});
 
     const salaryDetails = await PaySlip.findOne({ employee_id: id });
 
     res.status(200).json(salaryDetails);
   } catch (err) {
     console.log(err);
-    res.status(500).json("Internal Server Error");
+    res.status(500).json({error:"Internal Server Error"});
   }
 };
 
@@ -111,7 +111,7 @@ const getTotalSalaryController = async (req, res) => {
       },
     ]);
 
-    if (!total) return res.status(404).json("No Salaries found");
+    if (!total) return res.status(404).json({message:"No Salaries found"});
 
     const totalSalary = parseFloat((total[0].totalNetPay).toFixed(2));
     res.status(200).json({ totalSalary });

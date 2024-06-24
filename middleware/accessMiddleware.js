@@ -4,7 +4,7 @@ const checkAdminRole = (req, res, next) => {
   if (user.role !== "admin") {
     return res
       .status(401)
-      .json("Unauthorized User (Only Admin can access this route)");
+      .json({message:"Unauthorized User (Only Admin can access this route)"});
   }
   next(); 
 };
@@ -28,7 +28,7 @@ const checkAccountantRole = (req, res, next) => {
   if (user.role !== "accountant")
     return res
       .status(401)
-      .json("Unauthorized User (Only Accountant can access this route)");
+      .json({messgae:"Unauthorized User (Only Accountant can access this route)"});
   next();
 }
 

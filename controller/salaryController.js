@@ -64,4 +64,49 @@ const createSalaryController = async (req, res) => {
   }
 };
 
-module.exports = { createSalaryController };
+const updateSalaryController = async (req, res) => {
+  try {
+    const user = req.user;
+    checkHrRole(user);
+    const {workingDays,month} = req.body;
+
+    const id = req.params.id;
+    if (!id) return res.status(404).json({ message: "No Employee found" });
+
+    const employee = await Emp.findById(id);
+    if (!employee)
+      return res.status(404).json({ message: "No Employee found" });
+
+    const salary = await Salary.findOne({ employee_id: id });
+    if (!salary)
+      return res
+        .status(404)
+        .json({ message: "Salary record not found for the employee" });
+
+    const perDayPay = salary.perDaySalary;
+
+    if (!workingDays)
+      return res.status(400).json({ message: "Working days are required" });
+
+    if (workingDays > 24) {
+      return res.status(400).json({ message: "Working days cannot be greater than 24" });
+    }
+
+    const inHandSalary = calculateInHandSalary(perDayPay, workingDays);
+    console.log(inHandSalary);
+
+    const newInhand = await InHand.findOneAndUpdate({employee_id : id},{workingDays,inHandSalary,month},{new:true});
+    console.log(newInhand);
+    if(!newInhand) return res.status(404).json({message:"New Inhand salary not found"});
+
+    res.status(200).json({Messgae:"Inhand Salary Updated \n"})
+
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: err.message });
+  }
+}
+
+module.exports = { createSalaryController ,updateSalaryController };
