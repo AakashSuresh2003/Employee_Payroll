@@ -8,10 +8,10 @@ const {
   deleteEmployeeController,
   getAllEmployeeController,
   getEmployeeByIdController,
-  calculateSalaryController,
   createAllowencePercentage,
   updateAllowencePercentage,
   getAllowencePercentage,
+  calculateSalaryController,
 } = require("../controller/employeeController");
 
 router.use(authMiddleware);

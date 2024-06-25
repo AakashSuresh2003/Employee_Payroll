@@ -13,7 +13,8 @@ const registerController = async (req, res) => {
     const hashedPassword = await bcrypt.hashSync(password, salt);
     const newUser = await User({ ...req.body, password: hashedPassword });
     await newUser.save();
-    res.status(200).json(newUser);
+    const {password:_, ...userDataWithoutPassword} = newUser._doc;
+    res.status(200).json(userDataWithoutPassword);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
