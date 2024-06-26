@@ -38,8 +38,8 @@ app.use("/api/v1/fa", faRouter);
 ConnectDB();
 
 const swaggerDocs = YAML.load(path.join(__dirname, '/swagger.yaml'));
-
-app.use("/api-docs", swaggerUi.setup(swaggerDocs));
+const options = { customCssUrl: '/public/swagger-ui.css', customSiteTitle: "The Words That I Know API - Swagger" };
+app.use("/api-docs",swaggerUi.serve ,swaggerUi.setup(swaggerDocs,options));
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
