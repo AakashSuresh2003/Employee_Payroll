@@ -17,6 +17,7 @@ const swaggerUi = require("swagger-ui-express");
 app.use(express.static("public"));
 
 app.use(express.json());
+app.use('/public/css', express.static('public/css'));
 
 
 app.use(bodyParser.json());
