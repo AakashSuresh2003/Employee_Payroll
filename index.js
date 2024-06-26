@@ -27,30 +27,6 @@ app.use(cors({origin:true,credentials:true}));
 
 const swaggerDocs = YAML.load(path.join(__dirname, '/swagger.yaml'));
 
-// const swaggerOptions = {
-//   swaggerDefinition: {
-//     openapi: "3.0.0",
-//     info: {
-//       title: "Payroll API",
-//       description: "API endpoints for payroll services documented on Swagger",
-//       contact: {
-//         name: "Aakash S",
-//         email: "aakashsuresh455@gmail.com",
-//         url: "https://github.com/aakashsuresh2003/Employee_Payroll",
-//       },
-//       version: "1.0.0",
-//     },
-//     servers: [
-//       {
-//         url: "https://employee-payroll-jet.vercel.app",
-//         description: "Deployed server",
-//       },
-//     ],
-//   },
-//   apis: ["./routes/*.js"],
-// };
-
-// const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get("/", (req, res) => {
