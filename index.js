@@ -25,10 +25,6 @@ app.use(cookieParser());
 
 app.use(cors({origin:true,credentials:true}));
 
-const swaggerDocs = YAML.load(path.join(__dirname, '/swagger.yaml'));
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
 app.get("/", (req, res) => {
   res.status(200).json("Welcome to Employee Payroll API");
 });
@@ -39,6 +35,10 @@ app.use("/api/v1/hr", hrRouter);
 app.use("/api/v1/fa", faRouter);
 
 ConnectDB();
+
+const swaggerDocs = YAML.load(path.join(__dirname, '/swagger.yaml'));
+
+app.use("/api-docs", swaggerUi.setup(swaggerDocs));
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
