@@ -38,7 +38,7 @@ app.use("/api/v1/fa", faRouter);
 ConnectDB();
 
 const swaggerDocs = YAML.load(path.join(__dirname, '/swagger.yaml'));
-const options = { customCssUrl: '/public/swagger-ui.css', customSiteTitle: "The Words That I Know API - Swagger" };
+const options = { customCssUrl: '/public/swagger-ui.css', customSiteTitle: "Payroll Management System - Swagger UI" };
 app.use("/api-docs",swaggerUi.serve ,swaggerUi.setup(swaggerDocs,options));
 
 const PORT = process.env.PORT;
