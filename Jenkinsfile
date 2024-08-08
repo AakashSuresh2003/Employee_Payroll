@@ -1,8 +1,8 @@
 pipeline {
     agent any
-
+    tools {nodejs "node"}
     stages {
-        stage('Checkout') {
+        stage1('Checkout') {
             steps {
                 git url: 'https://github.com/AakashSuresh2003/Employee_Payroll.git', branch: 'main'
             }
@@ -10,9 +10,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    sh 'npm install'
-                }
+                sh 'npm install'
             }
         }
 
