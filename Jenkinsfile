@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        PORT = '3000'  // Set your PORT environment variable here if needed
+        PORT = '3000'  
     }
     tools {nodejs "node"}
     stages {
@@ -18,7 +18,15 @@ pipeline {
         stage('Start Server') {
             steps {
                 script {
-                    sh 'nohup npm start &'
+                    sh 'nohup npm start > server.log 2>&1 &'
+                }
+            }
+        }
+        stage('Verify Server') {
+            steps {
+                script {
+                    sh 'sleep 5'
+                    sh 'curl http://localhost:3000 || echo "Server is not reachable"'
                 }
             }
         }
