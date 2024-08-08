@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        PORT = '3000'
+        PORT = '3000'  // Set your PORT environment variable here if needed
     }
     tools {nodejs "node"}
     stages {
@@ -15,10 +15,10 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage('starting server') {
+        stage('Start Server') {
             steps {
                 script {
-                    sh 'npm start'
+                    sh 'nohup npm start &'
                 }
             }
         }
