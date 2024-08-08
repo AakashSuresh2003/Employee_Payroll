@@ -41,7 +41,7 @@ const swaggerDocs = YAML.load(path.join(__dirname, '/swagger.yaml'));
 const options = { customCssUrl: '/public/swagger-ui.css', customSiteTitle: "Payroll Management System - Swagger UI" };
 app.use("/api-docs",swaggerUi.serve ,swaggerUi.setup(swaggerDocs,options));
 
-const PORT = process.env.PORT;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${process.env.PORT}`);
 });
