@@ -1,5 +1,5 @@
 const User = require("../model/userModel");
-const InitialData = require("../db/initialData")
+const InitialData = require("../db/initialData");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -13,7 +13,7 @@ const registerController = async (req, res) => {
     const hashedPassword = await bcrypt.hashSync(password, salt);
     const newUser = await User({ ...req.body, password: hashedPassword });
     await newUser.save();
-    const {password:_, ...userDataWithoutPassword} = newUser._doc;
+    const { password: _, ...userDataWithoutPassword } = newUser._doc;
     res.status(200).json(userDataWithoutPassword);
   } catch (err) {
     console.log(err);
@@ -26,7 +26,7 @@ const loginController = async (req, res) => {
     let users = await User.find();
 
     if (users.length === 0) {
-      const initialUser = InitialData; 
+      const initialUser = InitialData;
       const { name, email, password, role } = initialUser;
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
@@ -34,7 +34,9 @@ const loginController = async (req, res) => {
       const newUser = new User({ name, email, password: hashedPassword, role });
       await newUser.save();
 
-      return res.status(201).json({ message: "Initial user created. Please try logging in again." });
+      return res.status(201).json({
+        message: "Initial user created. Please try logging in again.",
+      });
     }
 
     const { email, password } = req.body;
@@ -42,7 +44,8 @@ const loginController = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User does not exist" });
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) return res.status(401).json({ message: "Invalid password" });
+    if (!isPasswordValid)
+      return res.status(401).json({ message: "Invalid password" });
 
     const { password: _, ...userData } = user._doc;
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
