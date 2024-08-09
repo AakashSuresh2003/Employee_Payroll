@@ -49,7 +49,7 @@ pipeline {
             steps {
                 echo 'Starting server...'
             script {
-                sh 'nohup npm start &'
+                sh 'nohup npm start'
                 sleep 10 
                 sh 'curl http://localhost:$PORT' 
                 }

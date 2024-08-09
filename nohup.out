@@ -6,3 +6,19 @@
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Server is running on http://localhost:3000
 Database Connected :  ac-8esnhfr-shard-00-01.k89bn4a.mongodb.net PayRoll
+
+> emppayroll@1.0.0 start
+> node index.js
+
+(node:26521) [DEP0128] DeprecationWarning: Invalid 'main' field in '/Users/aakashs/Documents/Trainingtasks/empPayroll/node_modules/swagger-ui-express/package.json' of './lib/index.js'. Please either fix that or report it to the module author
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Server is running on http://localhost:3000
+Database Connected :  ac-8esnhfr-shard-00-00.k89bn4a.mongodb.net PayRoll
+
+> emppayroll@1.0.0 start
+> node index.js
+
+(node:26675) [DEP0128] DeprecationWarning: Invalid 'main' field in '/Users/aakashs/Documents/Trainingtasks/empPayroll/node_modules/swagger-ui-express/package.json' of './lib/index.js'. Please either fix that or report it to the module author
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Server is running on http://localhost:3000
+Database Connected :  ac-8esnhfr-shard-00-00.k89bn4a.mongodb.net PayRoll
