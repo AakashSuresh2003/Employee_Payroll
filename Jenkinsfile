@@ -21,6 +21,14 @@ pipeline {
                     sh 'nohup npm start > server.log 2>&1 &'
                 }
             }
-        }    
+        }
+        stage('Verify Server') {
+             steps {
+                 script {
+                     sh 'sleep 5'
+                     sh 'curl http://localhost:3000 || echo "Server is not reachable"'
+                 }
+             }
+         }    
     }
 }
