@@ -15,10 +15,17 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage('Start Server') {
+        stage('Building Docker Image') {
             steps {
                 script {
-                    sh 'nohup npm start > server.log 2>&1 &'
+                    sh 'docker build -t node-app .'
+                }
+            }
+        }
+        stage('Deploying Docker Image') {
+            steps {
+                script {
+                    sh 'docker run -d 3000:3000 node-app'
                 }
             }
         }
