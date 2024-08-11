@@ -37,17 +37,5 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Container 2') {
-            steps {
-                script {
-                    // Remove existing container if it exists
-                    sh "docker stop node-app-container-2 || true"
-                    sh "docker rm node-app-container-2 || true"
-                    
-                    // Run the second container
-                    sh 'docker run -d -p 3002:3000 --name node-app-container-2 new-node-app'
-                }
-            }
-        }
     }
 }
