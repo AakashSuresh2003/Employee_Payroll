@@ -28,12 +28,7 @@ pipeline {
         stage('Deploy Container 1') {
             steps {
                 script {
-                    // Remove existing container if it exists
-                    sh "docker stop node-app-container-1 || true"
-                    sh "docker rm node-app-container-1 || true"
-                    
-                    // Run the first container
-                    sh 'docker run -d -p 3001:3000 --name node-app-container-1 new-node-app'
+                    sh "docker compose up -d"
                 }
             }
         }
