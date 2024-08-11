@@ -25,10 +25,12 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Container 1') {
+        stage('Deploy Container') {
             steps {
                 script {
-                    sh "docker compose up -d"
+                    sh 'docker stop node-app-container || true'
+                    sh 'docker rm node-app-container || true'
+                    sh 'docker compose up -d --build'
                 }
             }
         }
