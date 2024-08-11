@@ -3,7 +3,10 @@ pipeline {
     environment {
         PORT = '3000'  
     }
-    tools {nodejs "node"}
+    tools {
+        nodejs "node",
+        dockerTool "docker"
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -25,7 +28,7 @@ pipeline {
         stage('Deploying Docker Image') {
             steps {
                 script {
-                    sh 'docker run -d 3000:3000 node-app'
+                    sh 'docker run -p 3000:3000 new-app'
                 }
             }
         }
