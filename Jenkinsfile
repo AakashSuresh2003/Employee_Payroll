@@ -33,7 +33,7 @@ pipeline {
                     sh "docker rm node-app-container-1 || true"
                     
                     // Run the first container
-                    sh 'docker run -d -p 3001:3000 --name node-app-container-1 new-node-app'
+                    sh 'docker run -d -p 3000:3000 --name node-app-container-1 new-node-app'
                 }
             }
         }
