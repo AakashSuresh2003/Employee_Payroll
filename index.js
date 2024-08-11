@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use(cors({origin:true,credentials:true}));
 
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to Employee Payroll API v5");
+  res.status(200).json("Welcome to Employee Payroll API v6");
 });
 
 app.use("/api/v1/auth", authRouter);
