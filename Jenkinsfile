@@ -18,16 +18,6 @@ pipeline {
                 sh 'docker --version'
             }
         }
-        stage('Install Dependencies') {
-            steps {
-                // sh 'npm install'
-                echo 'checking version'
-                sh 'docker --version'
-                // sh 'rm -rf node_modules/'
-                // echo 'updating node'
-                // sh 'npm update'
-            }
-        }
         stage('Building Docker Image') {
             steps {
                 script {
@@ -35,10 +25,27 @@ pipeline {
                 }
             }
         }
-        stage('Deploying Docker Image') {
+        stage('Deploy Container 1') {
             steps {
                 script {
-                    sh 'docker run -d -p 3000:3000 new-node-app'
+                    // Remove existing container if it exists
+                    sh "docker stop node-app-container-1 || true"
+                    sh "docker rm node-app-container-1 || true"
+                    
+                    // Run the first container
+                    sh 'docker run -d -p 3001:3000 --name node-app-container-1 new-node-app'
+                }
+            }
+        }
+        stage('Deploy Container 2') {
+            steps {
+                script {
+                    // Remove existing container if it exists
+                    sh "docker stop node-app-container-2 || true"
+                    sh "docker rm node-app-container-2 || true"
+                    
+                    // Run the second container
+                    sh 'docker run -d -p 3002:3000 --name node-app-container-2 new-node-app'
                 }
             }
         }
