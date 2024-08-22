@@ -21,15 +21,19 @@ pipeline {
         stage('Building Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t new-node-app .'
+                    sh 'docker build -t new-node-app:latest .'
                 }
             }
         }
 
         stage('SonarQube Analysis') {
-            def scannerHome = tool 'SonarScanner'
-            withSonarQubeEnv() {
-                sh "${scannerHome}/bin/sonar-scanner"
+            steps {
+                script {
+                    def scannerHome = tool 'sonar-scanner'
+                    withSonarQubeEnv() {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
             }
         }
         
