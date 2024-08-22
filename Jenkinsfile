@@ -5,7 +5,7 @@ pipeline {
         PATH = "/usr/local/bin:$PATH"
     }
     tools {
-        nodejs "node"
+        nodejs 'node'
     }
     stages {
         stage('Checkout') {
@@ -25,6 +25,14 @@ pipeline {
                 }
             }
         }
+
+        stage('SonarQube Analysis') {
+            def scannerHome = tool 'SonarScanner'
+            withSonarQubeEnv() {
+                sh "${scannerHome}/bin/sonar-scanner"
+            }
+        }
+        
         stage('Deploy Container') {
             steps {
                 script {
