@@ -4,10 +4,10 @@ const ConnectDB = require("./db/database");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const authRouter = require("./routes/auth");
-const employeeRouter = require("./routes/employee");
-const hrRouter = require("./routes/hr");
-const faRouter = require("./routes/finance");
+const authRouter = require("./src/routes/auth");
+const employeeRouter = require("./src/routes/employee");
+const hrRouter = require("./src/routes/hr");
+const faRouter = require("./src/routes/finance");
 const bodyParser = require("body-parser");
 const YAML = require("yamljs");
 const path = require('path')
@@ -44,4 +44,5 @@ app.use("/api-docs",swaggerUi.serve ,swaggerUi.setup(swaggerDocs,options));
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Swagger UI is running on http://localhost:${PORT}/api-docs`);
 });

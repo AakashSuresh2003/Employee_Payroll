@@ -1,0 +1,6 @@
+projectKey=employee-payroll
+serverUrl=http://16.171.237.144:9000
+serverVersion=10.6.0.92116
+dashboardUrl=http://16.171.237.144:9000/dashboard?id=employee-payroll
+ceTaskId=52b4cf03-1d06-481c-97f2-4cd0cfcca99d
+ceTaskUrl=http://16.171.237.144:9000/api/ce/task?id=52b4cf03-1d06-481c-97f2-4cd0cfcca99d
