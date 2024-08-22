@@ -2,10 +2,11 @@ pipeline {
     agent any
     environment {
         PORT = '3000'
-        PATH = "/usr/local/bin:$PATH"
+        // PATH = "/usr/local/bin:$PATH"
     }
     tools {
         nodejs "node"
+        docker "docker"
     }
     stages {
         stage('Checkout') {
